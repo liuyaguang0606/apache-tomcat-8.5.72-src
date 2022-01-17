@@ -543,7 +543,7 @@ public class Catalina {
         initNaming();
 
         // Create and execute our Digester
-        Digester digester = createStartDigester();
+        Digester digester = createStartDigester(); // Digester 是Tomcat的 xml 文件解析工具
 
         InputSource inputSource = null;
         InputStream inputStream = null;
@@ -656,7 +656,7 @@ public class Catalina {
      * Load using arguments
      */
     public void load(String args[]) {
-
+        System.out.println("*********** >> catalina load(String args[])  ... ");
         try {
             if (arguments(args)) {
                 load();

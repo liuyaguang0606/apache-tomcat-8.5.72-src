@@ -245,10 +245,14 @@ public final class Bootstrap {
 
     /**
      * Initialize daemon.
+     * @Description :
+     *      ① 加载 类加载器
+     *      ② 通过反射 创建 Catalina 对象
      * @throws Exception Fatal initialization error
      */
     public void init() throws Exception {
-
+        System.out.println("*********** >> BootStrap main init  ... ");
+        // 1、初始化各种类加载器
         initClassLoaders();
 
         Thread.currentThread().setContextClassLoader(catalinaLoader);
@@ -259,6 +263,7 @@ public final class Bootstrap {
         if (log.isDebugEnabled()) {
             log.debug("Loading startup class");
         }
+        // 2、通过反射 创建一个 Catalina 对象
         Class<?> startupClass = catalinaLoader.loadClass("org.apache.catalina.startup.Catalina");
         Object startupInstance = startupClass.getConstructor().newInstance();
 
@@ -271,10 +276,12 @@ public final class Bootstrap {
         paramTypes[0] = Class.forName("java.lang.ClassLoader");
         Object paramValues[] = new Object[1];
         paramValues[0] = sharedLoader;
+        // 2.1、调用 setParentClassLoader 方法 设置父的加载器
         Method method =
             startupInstance.getClass().getMethod(methodName, paramTypes);
         method.invoke(startupInstance, paramValues);
 
+        // 2.2 设置 Catalina 对象 并结束返回
         catalinaDaemon = startupInstance;
     }
 
@@ -284,6 +291,7 @@ public final class Bootstrap {
      */
     private void load(String[] arguments) throws Exception {
 
+        System.out.println("*********** >> BootStrap main load(String[] arguments)  ... ");
         // Call the load() method
         String methodName = "load";
         Object param[];
@@ -302,7 +310,8 @@ public final class Bootstrap {
         if (log.isDebugEnabled()) {
             log.debug("Calling startup class " + method);
         }
-        method.invoke(catalinaDaemon, param);
+
+        method.invoke(catalinaDaemon, param); // 调用Catalina 对象的load 方法
     }
 
 
@@ -431,11 +440,14 @@ public final class Bootstrap {
 
     /**
      * Main method and entry point when starting Tomcat via the provided
+     *  main 方法是开启 Tomcat 的入口
      * scripts.
      *
      * @param args Command line arguments to be processed
      */
     public static void main(String args[]) {
+
+        System.out.println("*********** >> BootStrap main start  ... ");
 
         synchronized (daemonLock) {
             if (daemon == null) {
